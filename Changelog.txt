@@ -1,0 +1,23 @@
+1.1.3
+- dimmer levels can be set, dimmer status is properly shown now
+
+1.1.2
+- (Lights) dimmers will be shown as well but can only be set to "on" or "off" state right now
+
+1.1.1
+- complete rewrite of the app. No specific config needed for switch idx values.
+   The full config is read from domoticz and shown in two lists (switches and groups/scenes)
+- clicking on a switch or scene on the main screen will also show add switch/scene to the tile (max 2 switches/scenes)
+- new icons are used (need the latest resource file for that - check for updates in the TSC tab in settings)
+- user settings are now stored in /mnt/data/tsc (preparing for a nice upcoming feature which I cannot talk about right now :-) ) 
+
+1.0.2
+- added an active tile showing switch 1 and switch 2 only.
+  you can toggle the switches by clicking on the icons on the tile.
+  clicking anywhere else on the tile opens the full domoticzboard screen
+
+1.0.1
+- fixed typos for switch 4 and switch 5
+
+1.0.0
+- first ToonStore release
