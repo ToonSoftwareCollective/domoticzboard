@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.1
 import qb.components 1.0
 
 import SimpleXmlListModel 1.0
@@ -30,6 +30,8 @@ Item {
 	property SimpleXmlListModel dataModel
 	/// Number of items per one page - maximum number of items in Repeater.
 	property int itemsPerPage: 5
+	/// Number of columns
+	property int columnsPerPage: 1
 	/// number of items in dataModel
 	property int count: dataModel.count
 	/// Currently selected item in the Repeater.
@@ -230,10 +232,12 @@ Item {
 		}
 
 		///Repeater within Column positioner for displaying the visible items
-		Column {
+		Grid {
 			id: repeaterColumn
+			flow: Grid.TopToBottom
 			width: domoticzMarkup.width
 			height: domoticzMarkup.height
+			columns: columnsPerPage
 			anchors {
 				top: domoticzMarkup.top
 				topMargin: 6

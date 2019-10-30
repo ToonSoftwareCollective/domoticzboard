@@ -1,11 +1,11 @@
-import QtQuick 1.1
+import QtQuick 2.1
 import qb.components 1.0
 import BasicUIControls 1.0
 
 Screen {
 	id: root
 	screenTitle: qsTr("DomoticzBoard Instellingen")
-	screenTitleIconUrl: "./drawables/DomoticzSystrayIcon.png"
+	screenTitleIconUrl: "qrc:/tsc/DomoticzSystrayIcon.png"
 
 	property bool messageShown : false
 	
@@ -14,6 +14,7 @@ Screen {
 		showDummiesToggle.isSwitchedOn = app.showDummies;
 		showDBIconToggle.isSwitchedOn = app.showDBIcon;
 		showFavouritesToggle.isSwitchedOn = app.showFavourites;
+		showScenesToggle.isSwitchedOn = app.showScenes;
 		ipadresLabel.inputText = app.ipadres;
 		poortnummerLabel.inputText = app.poortnummer;
 		messageShown = false;
@@ -144,6 +145,37 @@ Screen {
 			showMessage();
 		}
 	}	
+
+	Text {
+		id: scenesText
+		anchors {
+			left: parent.left
+			leftMargin: isNxt ? 62 : 50
+			top: dummiesText.bottom
+			topMargin: isNxt ? 25 : 20
+		}
+		font {
+			pixelSize: isNxt ? 25 : 20
+			family: qfont.bold.name
+		}
+		wrapMode: Text.WordWrap
+		text: "Toon scenes/groep panel?"
+	}
+	OnOffToggle {
+		id: showScenesToggle
+		height: 36
+		anchors {
+			right: parent.right
+			rightMargin: isNxt ? 125 : 100
+			top: dummiesText.bottom
+			topMargin: isNxt ? 25 : 20
+		}
+		leftIsSwitchedOn: false
+		onSelectedChangedByUser: {
+			app.showScenes = isSwitchedOn
+			showMessage();
+		}
+	}	
 	
 
 	EditTextLabel4421 {
@@ -155,7 +187,7 @@ Screen {
 		anchors {
 			left:parent.left
 			leftMargin: isNxt ? 62 : 50
-			top: dummiesText.bottom
+			top: scenesText.bottom
 			topMargin: isNxt ? 25 : 20
 		}
 	}
@@ -168,7 +200,7 @@ Screen {
 			leftMargin: isNxt ? 12 : 10
 			top: ipadresLabel.top
 		}
-		iconSource: "./drawables/edit.png"
+		iconSource: "qrc:/tsc/edit.png"
 		onClicked: {
 			qkeyboard.open("Voer hier uw hostname of ip-adres in", ipadresLabel.inputText, saveIpadres)
 		}
@@ -198,7 +230,7 @@ Screen {
 			leftMargin: isNxt ? 12 : 10
 			top: poortnummerLabel.top
 		}
-		iconSource: "./drawables/edit.png"
+		iconSource: "qrc:/tsc/edit.png"
 			onClicked: {
 			qkeyboard.open("voer hier de poort in", poortnummerLabel.inputText, savePoortnummer);
 		}

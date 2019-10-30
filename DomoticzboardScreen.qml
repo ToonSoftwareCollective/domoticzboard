@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.1
 import SimpleXmlListModel 1.0
 import qb.components 1.0
 import qb.base 1.0
@@ -6,10 +6,11 @@ import qb.base 1.0
 Screen {
 	id: root
 	
-	screenTitleIconUrl: "./drawables/DomoticzSystrayIcon.png"
+	screenTitleIconUrl: "qrc:/tsc/DomoticzSystrayIcon.png"
 	screenTitle: "DomoticzBoard"
 	property bool domoticzSwitchesLoaded : false
 	property int currentIndex : -1
+	property bool blockDimmerControls : false
 
 	// Function (triggerd by a signal) updates the newsreader list model and the header text
 	function updateDomoticzList() {
@@ -95,6 +96,7 @@ Screen {
 			text: "Groepen/Scenes:"
 			font.family: qfont.semiBold.name
 			font.pixelSize: isNxt ? 25 : 20
+			visible: app.showScenes
 			anchors {
 				left: parent.left
 				leftMargin: isNxt ? 555 : 444
@@ -110,13 +112,13 @@ Screen {
 			anchors.bottomMargin: 5
 			leftClickMargin: 3
 			bottomClickMargin: 5
-			iconSource: "./drawables/refresh.svg"
+			iconSource: "qrc:/tsc/refresh.svg"
 			onClicked: app.refreshScreen()
 		}
 	}
 	Rectangle {
 		id: content
-		width: isNxt ? 500 : 400
+		width: isNxt ? (app.showScenes ? 500 : 932) : (app.showScenes ? 400 : 732)
 		height: isNxt ? 468 : 370
 		anchors.top: header.bottom
 		anchors.left: header.left
@@ -124,6 +126,7 @@ Screen {
 
 		DomoticzSimpleList { 
 			id: domoticzSimpleSwitchesList
+			columnsPerPage: app.showScenes ? 1 : 2
 			delegate: Rectangle
 			{
 				width: isNxt ? 425 : 325
@@ -190,13 +193,15 @@ Screen {
 //					leftClickMargin: 3
 //					bottomClickMargin: 5
 					onClicked: {
-						var dimStep = parseInt(maxdimlevel) / 10;
-						dimlevel = parseInt(dimlevel) + dimStep;
-						if (dimlevel > parseInt(maxdimlevel)) dimlevel = maxdimlevel;
-						if (dimlevel > 0) status = "On"; 
-						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + dimlevel);
+						var newDimStep = parseInt(dimlevel) + (parseInt(maxdimlevel) / 10);
+						if (newDimStep > parseInt(maxdimlevel)) {
+							 newDimStep = parseInt(maxdimlevel);
+						}
+						blockDimmerControls = true;
+						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + newDimStep);
+						pause1Second.start();
 					}
-					visible: (switchtype == "Dimmer")
+					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
 
 				Text {
@@ -227,23 +232,24 @@ Screen {
 //					leftClickMargin: 3
 //					bottomClickMargin: 5
 					onClicked: {
-						currentIndex = index;
-						var dimStep = parseInt(maxdimlevel) / 10;
-						dimlevel = parseInt(dimlevel) - dimStep;
-						if (dimlevel < 0) dimlevel = 0; 
-						if (dimlevel == 0) status = "Off"; 
-						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + dimlevel);
+						var newDimStep = parseInt(dimlevel) - (parseInt(maxdimlevel) / 10);
+						if (newDimStep < 0) {
+							 newDimStep = 0;
+						}
+						blockDimmerControls = true;
+						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + newDimStep);
+						pause1Second.start();
 					}
-					visible: (switchtype == "Dimmer")
+					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
 
 			}
 
 			dataModel: switchesModel
 			itemHeight: isNxt ? 60 : 46
-			itemsPerPage: 7
+			itemsPerPage: app.showScenes ? 7 : 14
 			anchors.top: content.top
-			downIcon: "./drawables/arrowScrolldown.png"
+			downIcon: "qrc:/tsc/arrowScrolldown.png"
 			buttonsHeight: isNxt ? 180 : 144
 			buttonsVisible: true
 			scrollbarVisible: true
@@ -265,6 +271,7 @@ Screen {
 			status: "string",
 			switchtype: "string",
 			maxdimlevel: "string",
+			levelint: "string",
 			dimlevel: "string"
 		})
 	}
@@ -276,9 +283,11 @@ Screen {
 		anchors.top: header.bottom
 		anchors.right: header.right
 		anchors.rightMargin: isNxt ? 15 : 12
+		visible: app.showScenes
 
 		DomoticzSimpleList {
 			id: domoticzSimpleScenesList
+			columnsPerPage: 1
 			delegate: Rectangle
 			{
 				width: isNxt ? 375 : 282
@@ -338,7 +347,7 @@ Screen {
 			itemHeight: isNxt ? 60 : 46
 			itemsPerPage: 7
 			anchors.top: content2.top
-			downIcon: "./drawables/arrowScrolldown.png"
+			downIcon: "qrc:/tsc/arrowScrolldown.png"
 			buttonsHeight: isNxt ? 180 : 144
 			buttonsVisible: true
 			scrollbarVisible: true
@@ -359,5 +368,13 @@ Screen {
 			name: "string",
 			status: "string"
 		})
+	}
+
+	Timer {
+		id: pause1Second
+		interval: 1000
+		running: false
+		repeat: false
+		onTriggered: blockDimmerControls = false
 	}
 }

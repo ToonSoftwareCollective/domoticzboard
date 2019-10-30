@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 2.1
 import qb.components 1.0
 import qb.base 1.0;
 import FileIO 1.0
@@ -7,7 +7,7 @@ App {
 	id: root
 
 	property url trayUrl : "DomoticzboardTray.qml";
-	property url thumbnailIcon: "./drawables/DomoticzSystrayIcon.png"
+	property url thumbnailIcon: "qrc:/tsc/DomoticzSystrayIcon.png"
 	property url menuScreenUrl : "DomoticzboardSettings.qml"
 	property url domoticzScreenUrl : "DomoticzboardScreen.qml"
 	property url domoticzTileUrl : "DomoticzboardTile.qml"
@@ -18,6 +18,7 @@ App {
 	property bool showDBIcon : true
 	property bool showDummies : true
 	property bool showFavourites : true
+	property bool showScenes : true
 	property variant domoticzConfigJSON
 
 	// Domoticz data in XML string format
@@ -42,14 +43,14 @@ App {
 
 	property bool firstTimeShown : true
 
-	property string tilebulb_offvar: "./drawables/TileLightBulbOff.png";
-	property string tilebulb_onvar: "./drawables/TileLightBulbOn.png";
-	property string dimtilebulb_offvar: "./drawables/DimTileLightBulbOff.png";
-	property string dimtilebulb_onvar: "./drawables/DimTileLightBulbOn.png";
-	property string bulb_offvar: "./drawables/LightBulbOff.png";
-	property string bulb_onvar: "./drawables/LightBulbOn.png";
-	property string group_offvar: "./drawables/LightBulbOff.png";
-	property string group_onvar: "./drawables/LightBulbOn.png";
+	property string tilebulb_offvar: "qrc:/tsc/TileLightBulbOff.png";
+	property string tilebulb_onvar: "qrc:/tsc/TileLightBulbOn.png";
+	property string dimtilebulb_offvar: "qrc:/tsc/DimTileLightBulbOff.png";
+	property string dimtilebulb_onvar: "qrc:/tsc/DimTileLightBulbOn.png";
+	property string bulb_offvar: "qrc:/tsc/LightBulbOff.png";
+	property string bulb_onvar: "qrc:/tsc/LightBulbOn.png";
+	property string group_offvar: "qrc:/tsc/LightBulbOff.png";
+	property string group_onvar: "qrc:/tsc/LightBulbOn.png";
 
 	// user settings from config file
 	property variant userSettingsJSON : {
@@ -94,6 +95,7 @@ App {
 			ipadres = splitVar[0];
 			poortnummer = splitVar[1];
 			if (poortnummer.length < 2) poortnummer = "8080";		
+			showScenes = (userSettingsJSON['ShowScenes']) ? userSettingsJSON['ShowScenes'] : true
 		} catch(e) {
 		}
 
@@ -114,7 +116,7 @@ App {
 			// get light switches from config
 		for (var i = 0; i < domoticzConfigJSON["result"].length; i++) {	
 				// [Type] = Group
-			if ((domoticzConfigJSON["result"][i]["Type"] == "Group") || (domoticzConfigJSON["result"][i]["Type"] == "Scene")) {
+			if (((domoticzConfigJSON["result"][i]["Type"] == "Group") || (domoticzConfigJSON["result"][i]["Type"] == "Scene")) && showScenes) {
 				if (!(showFavourites) || (domoticzConfigJSON["result"][i]["Favorite"] == 1)) {
 					domoticzScenesData = domoticzScenesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + domoticzConfigJSON["result"][i]["Status"] + "</status></item>";
 
@@ -188,6 +190,7 @@ App {
 			"ShowTrayIcon" : (showDBIcon) ? "yes" : "no",
 			"ShowFavourites" : (showFavourites) ? "yes" : "no",
 			"ShowDummies" : (showDummies) ? "yes" : "no",
+			"ShowScenes" : (showScenes) ? "yes" : "no",
 			"TileIdx1" : switch1Idx,
 			"TileIdx2" : switch2Idx,
 			"TileType1" : switch1Type,
