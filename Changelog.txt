@@ -1,3 +1,6 @@
+1.1.5
+- improved handling of dimmer levels, now also support 'builtin' array's with dimlevels
+
 1.1.4
 - improved handling of dimmer levels, now in 10 steps from min to max
 

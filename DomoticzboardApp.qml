@@ -154,7 +154,7 @@ App {
 
 									// filter dummies if needed
 								if (showDummies || (domoticzConfigJSON["result"][i]["HardwareType"].substring(0,5) !== "Dummy")) {
-									domoticzSwitchesData = domoticzSwitchesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + tmpStatus + "</status><switchtype>" + domoticzConfigJSON["result"][i]["SwitchType"] + "</switchtype><maxdimlevel>" + domoticzConfigJSON["result"][i]["MaxDimLevel"] + "</maxdimlevel><dimlevel>" + domoticzConfigJSON["result"][i]["Level"] + "</dimlevel></item>";
+									domoticzSwitchesData = domoticzSwitchesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + tmpStatus + "</status><switchtype>" + domoticzConfigJSON["result"][i]["SwitchType"] + "</switchtype><maxdimlevel>" + domoticzConfigJSON["result"][i]["MaxDimLevel"] + "</maxdimlevel><dimlevelint>" + domoticzConfigJSON["result"][i]["LevelInt"] + "</dimlevelint><dimlevel>" + domoticzConfigJSON["result"][i]["Level"] + "</dimlevel></item>";
 								}
 
 									// file Tile values

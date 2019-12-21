@@ -193,7 +193,11 @@ Screen {
 //					leftClickMargin: 3
 //					bottomClickMargin: 5
 					onClicked: {
-						var newDimStep = parseInt(dimlevel) + (parseInt(maxdimlevel) / 10);
+						if (parseInt(maxdimlevel) > 19) { // in 10 steps
+							var newDimStep = parseInt(dimlevelint) + (parseInt(maxdimlevel) / 10);
+						} else {
+							var newDimStep = parseInt(dimlevelint) + 1;
+						}
 						if (newDimStep > parseInt(maxdimlevel)) {
 							 newDimStep = parseInt(maxdimlevel);
 						}
@@ -232,7 +236,11 @@ Screen {
 //					leftClickMargin: 3
 //					bottomClickMargin: 5
 					onClicked: {
-						var newDimStep = parseInt(dimlevel) - (parseInt(maxdimlevel) / 10);
+						if (parseInt(maxdimlevel) > 19) { // in 10 steps
+							var newDimStep = parseInt(dimlevelint) - (parseInt(maxdimlevel) / 10);
+						} else {
+							var newDimStep = parseInt(dimlevelint) - 1;
+						}
 						if (newDimStep < 0) {
 							 newDimStep = 0;
 						}
@@ -271,7 +279,7 @@ Screen {
 			status: "string",
 			switchtype: "string",
 			maxdimlevel: "string",
-			levelint: "string",
+			dimlevelint: "string",
 			dimlevel: "string"
 		})
 	}
