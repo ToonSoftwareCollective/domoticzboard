@@ -15,7 +15,7 @@ Screen {
 	property string currentLevelName
 	property string headerTextSwitches : "Schakelaars:"
 
-	// Function (triggerd by a signal) updates the newsreader list model and the header text
+	// Function (triggerd by a signal) updates the list models
 	function updateDomoticzList() {
 
 		if (app.domoticzSwitchesData.length > 0) {
@@ -159,12 +159,19 @@ Screen {
        					id: selectForTile
 				       anchors.fill: parent
 					onClicked: {
+						app.switch2Option = app.switch1Option;
 						app.switch2Name = app.switch1Name;
 						app.switch1Name = name;
 						app.switch2Idx = app.switch1Idx;
 						app.switch1Idx = idx;
 						app.switch2Status = app.switch1Status;
 						app.switch1Status = status;
+						if (switchtype == "Selector") {
+							var arrayNames = levelnames.split(',');
+							app.switch1Option = arrayNames[dimlevel / 10];
+						} else {
+							app.switch1Option = "";
+						}
 						app.switch2Type = app.switch1Type;
 						app.switch1Type = "Light";
 						app.saveSettings();
@@ -218,13 +225,13 @@ Screen {
 					iconSource: "qrc:/tsc/edit.png"
 					onClicked: {
 						currentIdx = idx;
-						stationFilterModel.clear();
+						optionsModel.clear();
 						var arrayNames = levelnames.split(',');
 						currentLevelName = arrayNames[dimlevel / 10];
 						for (var i = 0; i < arrayNames.length; i++) {
-							stationFilterModel.append({name: arrayNames[i], level: i * 10});
+							optionsModel.append({name: arrayNames[i], level: i * 10});
 						}
-						stationGridView.visible = true;
+						optionsGridView.visible = true;
 						content.visible = false;
 						headerTextSwitches = "Schakelaar: " + name
 					}
@@ -240,8 +247,6 @@ Screen {
 					anchors.top: parent.top
 					anchors.topMargin: isNxt ? 10 : 8
 					anchors.rightMargin: 10
-//					leftClickMargin: 3
-//					bottomClickMargin: 5
 					onClicked: {
 						if (parseInt(maxdimlevel) > 19) { // in 10 steps
 							var newDimStep = parseInt(dimlevelint) + (parseInt(maxdimlevel) / 10);
@@ -283,8 +288,6 @@ Screen {
 					anchors.top: parent.top
 					anchors.topMargin: isNxt ? 10 : 8
 					anchors.rightMargin: 10
-//					leftClickMargin: 3
-//					bottomClickMargin: 5
 					onClicked: {
 						if (parseInt(maxdimlevel) > 19) { // in 10 steps
 							var newDimStep = parseInt(dimlevelint) - (parseInt(maxdimlevel) / 10);
@@ -369,6 +372,8 @@ Screen {
        					id: selectForTile
 				       anchors.fill: parent
 					onClicked: {
+						app.switch2Option = app.switch1Option;
+						app.switch1Option = "";
 						app.switch2Name = app.switch1Name;
 						app.switch1Name = name;
 						app.switch2Idx = app.switch1Idx;
@@ -431,7 +436,7 @@ Screen {
 
 
 	GridView {
-		id: stationGridView
+		id: optionsGridView
 		width: isNxt ? (app.showScenes ? 500 : 932) : (app.showScenes ? 400 : 732)
 		height: isNxt ? 468 : 370
 		visible: false
@@ -442,7 +447,7 @@ Screen {
 			left: content.left
 		}
 
-		model: stationFilterModel
+		model: optionsModel
 		delegate: Rectangle {
 			color: colors.canvas
 
@@ -451,13 +456,14 @@ Screen {
 				width: isNxt ? 240 : 190
 				height: isNxt ? 40 : 32
 				text: (name == currentLevelName) ? "(*) " + name : name
+				fontColor: (name == currentLevelName) ? "black" : "white"
 				fontPixelSize: isNxt ? 25 : 20
 
 				onClicked: {
 					if (name !== currentLevelName) {
 						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + currentIdx + "&switchcmd=Set%20Level&level=" + level);
 					}
-					stationGridView.visible = false;
+					optionsGridView.visible = false;
 					content.visible = true;
 					headerTextSwitches = "Schakelaars:"
 				}
@@ -472,7 +478,7 @@ Screen {
 	}
 
 	ListModel {
-		id: stationFilterModel
+		id: optionsModel
 	}
 
 

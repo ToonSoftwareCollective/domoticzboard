@@ -36,10 +36,12 @@ App {
 	property string switch1Idx : "*" 	
 	property string switch1Status	
 	property string switch1Type	
+	property string switch1Option	
 	property string switch2Name	
 	property string switch2Idx : "*" 	
 	property string switch2Status	
 	property string switch2Type	
+	property string switch2Option	
 
 	property bool firstTimeShown : true
 
@@ -161,20 +163,17 @@ App {
 
 									// determine status for selectors
 								
-								if (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector") {
-									if (domoticzConfigJSON["result"][i]["Status"] == "Off") {
-										tmpStatus = "Off"
-									} else {
-										tmpStatus = "On"
-									}
-								}
-
-									// determine status for selectors
-								
 								var tmpLevelNames = [];
+								var tmpOption = "";
 								if (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector") {
 									var tmpNames = a2b(domoticzConfigJSON["result"][i]["LevelNames"]);
 									tmpLevelNames = tmpNames.split("|");
+									if (domoticzConfigJSON["result"][i]["Status"] == "Off") {
+										tmpStatus = "Off"
+									} else {
+										tmpStatus = "On";
+									}
+									tmpOption = tmpLevelNames[domoticzConfigJSON["result"][i]["Level"] / 10];
 								}
 
 									// filter dummies if needed
@@ -186,10 +185,12 @@ App {
 								if ((domoticzConfigJSON["result"][i]["idx"] == switch1Idx) && (switch1Type == "Light")) {
 									switch1Name = domoticzConfigJSON["result"][i]["Name"];
 									switch1Status = tmpStatus;
+									switch1Option = tmpOption;
 								}
 								if ((domoticzConfigJSON["result"][i]["idx"] == switch2Idx) && (switch2Type == "Light")) {
 									switch2Name = domoticzConfigJSON["result"][i]["Name"];
 									switch2Status = tmpStatus;
+									switch2Option = tmpOption;
 								}
 							}
 						}
