@@ -11,9 +11,13 @@ Screen {
 	property bool domoticzSwitchesLoaded : false
 	property int currentIndex : -1
 	property bool blockDimmerControls : false
+	property int currentIdx
+	property string currentLevelName
+	property string headerTextSwitches : "Schakelaars:"
 
 	// Function (triggerd by a signal) updates the newsreader list model and the header text
 	function updateDomoticzList() {
+
 		if (app.domoticzSwitchesData.length > 0) {
 			// Update the domoticz list model
 			currentIndex = domoticzSimpleSwitchesList.dataIndex;
@@ -61,6 +65,12 @@ Screen {
 		}
 	}
 
+	function getSelectorStatus(levelnames, dimlevel) {
+		var arrayNames = levelnames.split(',');
+		var arrayIndex = dimlevel / 10;
+		return arrayNames[arrayIndex]
+	}
+
 	function simpleSynchronous(request) {
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open("GET", request, true);
@@ -81,7 +91,7 @@ Screen {
 
 		Text {
 			id: headerText
-			text: "Schakelaars:"
+			text: headerTextSwitches 
 			font.family: qfont.semiBold.name
 			font.pixelSize: isNxt ? 25 : 20
 			anchors {
@@ -179,6 +189,46 @@ Screen {
 							simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=On");
 						}
 					}
+				}
+
+				Text {
+					id: txtSelectorStatus
+					text: (switchtype == "Selector") ? getSelectorStatus(levelnames, dimlevel) : ""
+					font.pixelSize: isNxt ? 20 : 16
+					font.family: qfont.bold.name
+					color: colors.clockTileColor
+					anchors {
+						top: parent.top
+						topMargin: isNxt ? 15 : 12
+						right: editSelector.left
+						rightMargin: isNxt ? 12 : 10
+					}
+				}
+
+				IconButton {
+					id: editSelector
+					width: isNxt ? 50 : 40
+					anchors {
+						right:showSwitchToggle.left
+						rightMargin: isNxt ? 12 : 10
+						top: parent.top
+						topMargin: isNxt ? 7 : 5
+
+					}
+					iconSource: "qrc:/tsc/edit.png"
+					onClicked: {
+						currentIdx = idx;
+						stationFilterModel.clear();
+						var arrayNames = levelnames.split(',');
+						currentLevelName = arrayNames[dimlevel / 10];
+						for (var i = 0; i < arrayNames.length; i++) {
+							stationFilterModel.append({name: arrayNames[i], level: i * 10});
+						}
+						stationGridView.visible = true;
+						content.visible = false;
+						headerTextSwitches = "Schakelaar: " + name
+					}
+					visible: (switchtype == "Selector")
 				}
 
 				StandardButton {
@@ -280,6 +330,7 @@ Screen {
 			switchtype: "string",
 			maxdimlevel: "string",
 			dimlevelint: "string",
+			levelnames: "string",
 			dimlevel: "string"
 		})
 	}
@@ -377,6 +428,53 @@ Screen {
 			status: "string"
 		})
 	}
+
+
+	GridView {
+		id: stationGridView
+		width: isNxt ? (app.showScenes ? 500 : 932) : (app.showScenes ? 400 : 732)
+		height: isNxt ? 468 : 370
+		visible: false
+
+		anchors {
+			top: content.top
+			topMargin: isNxt ? 10 : 8
+			left: content.left
+		}
+
+		model: stationFilterModel
+		delegate: Rectangle {
+			color: colors.canvas
+
+			StandardButton {
+				id: filterButton
+				width: isNxt ? 240 : 190
+				height: isNxt ? 40 : 32
+				text: (name == currentLevelName) ? "(*) " + name : name
+				fontPixelSize: isNxt ? 25 : 20
+
+				onClicked: {
+					if (name !== currentLevelName) {
+						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + currentIdx + "&switchcmd=Set%20Level&level=" + level);
+					}
+					stationGridView.visible = false;
+					content.visible = true;
+					headerTextSwitches = "Schakelaars:"
+				}
+			}
+		}
+
+
+		interactive: false
+		flow: GridView.TopToBottom
+		cellWidth: isNxt ? 250 : 200
+		cellHeight: isNxt ? 50 : 40
+	}
+
+	ListModel {
+		id: stationFilterModel
+	}
+
 
 	Timer {
 		id: pause1Second

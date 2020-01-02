@@ -1,3 +1,6 @@
+1.1.6
+- added support for 'selector' type switches, option to select one of the supported states per selector
+
 1.1.5
 - improved handling of dimmer levels, now also support 'builtin' array's with dimlevels
 

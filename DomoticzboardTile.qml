@@ -84,10 +84,27 @@ Tile {
 		horizontalAlignment: Text.AlignHCenter
         	font {
             		family: qfont.semiBold.name
-            		pixelSize: isNxt ? 25 : 20
+             		pixelSize: isNxt ? 20 : 16
         	}
         	color: colors.clockTileColor
         	text: app.switch1Name.substring(0,11)
+    	}
+
+    	Text {
+        	id: switch1Status
+         	width: -10 + parent.width / 2
+       		anchors {
+            		top: switch1Title.bottom
+              		left: parent.left
+			leftMargin: 5
+        	}
+		horizontalAlignment: Text.AlignHCenter
+        	font {
+            		family: qfont.semiBold.name
+            		pixelSize: isNxt ? 25 : 20
+        	}
+        	color: colors.clockTileColor
+        	text: app.switch1Status
     	}
 
  	Image {
@@ -135,9 +152,27 @@ Tile {
 		horizontalAlignment: Text.AlignHCenter
         	font {
             		family: qfont.semiBold.name
-            		pixelSize: isNxt ? 25 : 20
+            		pixelSize: isNxt ? 20 : 16
         	}
         	color: colors.clockTileColor
 		text: app.switch2Name.substring(0,11)
     	}
+
+    	Text {
+        	id: switch2Status
+         	width: -10 + parent.width / 2
+       		anchors {
+            		top: switch2Title.bottom
+            		right: parent.right
+			rightMargin: 5
+        	}
+		horizontalAlignment: Text.AlignHCenter
+        	font {
+            		family: qfont.semiBold.name
+            		pixelSize: isNxt ? 25 : 20
+        	}
+        	color: colors.clockTileColor
+        	text: app.switch2Status
+    	}
+
 }

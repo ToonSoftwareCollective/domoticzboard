@@ -107,6 +107,13 @@ App {
 		readDomoticzConfig();
 	}
 
+	function a2b(a) {
+  		var b, c, d, e = {}, f = 0, g = 0, h = "", i = String.fromCharCode, j = a.length;
+  		for (b = 0; 64 > b; b++) e["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(b)] = b;
+  		for (c = 0; j > c; c++) for (b = e[a.charAt(c)], f = (f << 6) + b, g += 6; g >= 8; ) ((d = 255 & f >>> (g -= 8)) || j - 2 > c) && (h += i(d));
+  		return h;
+	}
+
 	function convertToXML() {
 
 			// init XML output
@@ -137,7 +144,7 @@ App {
 				if (domoticzConfigJSON["result"][i]["IsSubDevice"] !== true) {
 						// [Type] filter only "On/off" devices
 					if (domoticzConfigJSON["result"][i]["SwitchType"]) {
-						if ((domoticzConfigJSON["result"][i]["SwitchType"] == "On/Off") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Dimmer")) {
+						if ((domoticzConfigJSON["result"][i]["SwitchType"] == "On/Off") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Dimmer") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector")) {
 								// filter favourites if needed
 							if (!(showFavourites) || (domoticzConfigJSON["result"][i]["Favorite"] == 1)) {
 
@@ -152,9 +159,27 @@ App {
 									}
 								}
 
+									// determine status for selectors
+								
+								if (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector") {
+									if (domoticzConfigJSON["result"][i]["Status"] == "Off") {
+										tmpStatus = "Off"
+									} else {
+										tmpStatus = "On"
+									}
+								}
+
+									// determine status for selectors
+								
+								var tmpLevelNames = [];
+								if (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector") {
+									var tmpNames = a2b(domoticzConfigJSON["result"][i]["LevelNames"]);
+									tmpLevelNames = tmpNames.split("|");
+								}
+
 									// filter dummies if needed
 								if (showDummies || (domoticzConfigJSON["result"][i]["HardwareType"].substring(0,5) !== "Dummy")) {
-									domoticzSwitchesData = domoticzSwitchesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + tmpStatus + "</status><switchtype>" + domoticzConfigJSON["result"][i]["SwitchType"] + "</switchtype><maxdimlevel>" + domoticzConfigJSON["result"][i]["MaxDimLevel"] + "</maxdimlevel><dimlevelint>" + domoticzConfigJSON["result"][i]["LevelInt"] + "</dimlevelint><dimlevel>" + domoticzConfigJSON["result"][i]["Level"] + "</dimlevel></item>";
+									domoticzSwitchesData = domoticzSwitchesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + tmpStatus + "</status><switchtype>" + domoticzConfigJSON["result"][i]["SwitchType"] + "</switchtype><maxdimlevel>" + domoticzConfigJSON["result"][i]["MaxDimLevel"] + "</maxdimlevel><dimlevelint>" + domoticzConfigJSON["result"][i]["LevelInt"] + "</dimlevelint><dimlevel>" + domoticzConfigJSON["result"][i]["Level"] + "</dimlevel><levelnames>" + tmpLevelNames.toString() + "</levelnames></item>";
 								}
 
 									// file Tile values
@@ -171,6 +196,7 @@ App {
 					}
 				}
 			}
+
 		}
 		domoticzSwitchesData = domoticzSwitchesData + "</domoticz>";
 		domoticzScenesData = domoticzScenesData + "</domoticz>";
