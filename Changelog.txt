@@ -1,3 +1,6 @@
+1.1.8
+- dimmableColors update
+
 1.1.7
 - added support for 'selector' type switches, option to select one of the supported states per selector
   clicking on the selector name will also show the selected option on the tile

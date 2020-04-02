@@ -86,7 +86,7 @@ Tile {
             		family: qfont.semiBold.name
              		pixelSize: isNxt ? 20 : 16
         	}
-        	color: colors.clockTileColor
+        	color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
         	text: app.switch1Name.substring(0,11)
     	}
 
@@ -103,7 +103,7 @@ Tile {
             		family: qfont.semiBold.name
              		pixelSize: isNxt ? 20 : 16
         	}
-        	color: colors.clockTileColor
+        	color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
         	text: app.switch1Option
     	}
 
@@ -154,7 +154,7 @@ Tile {
             		family: qfont.semiBold.name
             		pixelSize: isNxt ? 20 : 16
         	}
-        	color: colors.clockTileColor
+        	color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
 		text: app.switch2Name.substring(0,11)
     	}
 
@@ -171,7 +171,7 @@ Tile {
             		family: qfont.semiBold.name
              		pixelSize: isNxt ? 20 : 16
         	}
-        	color: colors.clockTileColor
+        	color: (typeof dimmableColors !== 'undefined') ? dimmableColors.clockTileColor : colors.clockTileColor
         	text: app.switch2Option
     	}
 }
