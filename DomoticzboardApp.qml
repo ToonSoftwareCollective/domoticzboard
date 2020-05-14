@@ -141,7 +141,7 @@ App {
 				}
 			}
 				// [Type] starting with "Light"
-			if (domoticzConfigJSON["result"][i]["Type"].substring(0,5) == "Light") {
+			if ((domoticzConfigJSON["result"][i]["Type"].substring(0,5) == "Light") || (domoticzConfigJSON["result"][i]["Type"].substring(0,12) == "Color Switch")) {
 					// [Type] ignore slave devices
 				if (domoticzConfigJSON["result"][i]["IsSubDevice"] !== true) {
 						// [Type] filter only "On/off" devices
