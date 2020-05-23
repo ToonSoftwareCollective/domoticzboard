@@ -30,7 +30,9 @@ App {
 	property string dateStr
 	property string connectionPath
 	property string ipadres
-	property string poortnummer : "8080"
+	property string portNumber : "8080"
+	property string username
+	property string password
 
 	property string switch1Name	
 	property string switch1Idx : "*" 	
@@ -57,6 +59,8 @@ App {
 	// user settings from config file
 	property variant userSettingsJSON : {
 		'connectionPath': [],
+		'Username': "",
+		'Password': "",
 		'ShowTrayIcon': "",
 		'ShowFavourites': "",
 		'ShowDummies': ""
@@ -95,8 +99,10 @@ App {
 			connectionPath = userSettingsJSON['connectionPath'];
 			var splitVar = connectionPath.split(":")
 			ipadres = splitVar[0];
-			poortnummer = splitVar[1];
-			if (poortnummer.length < 2) poortnummer = "8080";		
+			portNumber = splitVar[1];
+			if (portNumber.length < 2) portNumber = "8080";
+			username = (userSettingsJSON['Username']) ? userSettingsJSON['Username'] : ""
+			password = (userSettingsJSON['Password']) ? userSettingsJSON['Password'] : ""
 			showScenes = (userSettingsJSON['ShowScenes']) ? userSettingsJSON['ShowScenes'] : true
 		} catch(e) {
 		}
@@ -224,10 +230,12 @@ App {
 	function saveSettings(){
 
 		// save user settings
-		connectionPath = ipadres + ":" + poortnummer;
+		connectionPath = ipadres + ":" + portNumber;
 
  		var tmpUserSettingsJSON = {
-			"connectionPath" : ipadres + ":" + poortnummer,
+			"connectionPath" : ipadres + ":" + portNumber,
+			"Username" : username,
+			"Password" : password,
 			"ShowTrayIcon" : (showDBIcon) ? "yes" : "no",
 			"ShowFavourites" : (showFavourites) ? "yes" : "no",
 			"ShowDummies" : (showDummies) ? "yes" : "no",
@@ -254,7 +262,7 @@ App {
 				}
 			}
 		}
-		xmlhttp.open("GET", "http://"+connectionPath+"/json.htm?type=devices&filter=all&used=true&order=Name", true);
+		xmlhttp.open("GET", "http://"+connectionPath+"/json.htm?type=devices&filter=all&used=true&order=Name&username=" + Qt.btoa(username) + "&password=" + Qt.btoa(password), true);
 //		xmlhttp.open("GET", "http://127.0.0.1/hdrv_zwave/domoticzconfig.txt", true);
 		xmlhttp.send();
 	}
