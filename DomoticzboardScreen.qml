@@ -12,6 +12,7 @@ Screen {
 	property int currentIndex : -1
 	property bool blockDimmerControls : false
 	property int currentIdx
+	property int currentMaxDimLevel
 	property string currentLevelName
 	property string headerTextSwitches : "Schakelaars:"
 
@@ -82,6 +83,25 @@ Screen {
 			}
 		}
 		xmlhttp.send();
+	}
+
+	function validateDimmerValue(text, isFinalString) {
+		if (isFinalString) {
+			if ((parseInt(text) <= currentMaxDimLevel) && (parseInt(text) > -1))
+				return null;
+			else
+				return {title: "Ongeldig keuze", content: "Voer een getal in van 0 t/m " + currentMaxDimLevel};
+		}
+		return null;
+	}
+
+	function saveDimmerValue(text) {
+
+		if (text) {
+			blockDimmerControls = true;
+			simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + currentIdx + "&switchcmd=Set%20Level&level=" + text);
+			pause1Second.start();
+		}
 	}
 
 	Item {
@@ -190,10 +210,18 @@ Screen {
 					onSelectedChangedByUser: {
 						if (status == "On") {
 							status = "Off";
-							simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=Off");
+							if (orgswitchtype !== "Blinds Percentage") {
+								simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=Off");
+							} else {
+								simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=On");
+							}
 						} else {
 							status = "On";
-							simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=On");
+							if (orgswitchtype !== "Blinds Percentage") {
+								simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=On");
+							} else {
+								simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx="+idx+"&switchcmd=Off");
+							}
 						}
 					}
 				}
@@ -210,6 +238,7 @@ Screen {
 						right: editSelector.left
 						rightMargin: isNxt ? 12 : 10
 					}
+
 				}
 
 				IconButton {
@@ -246,7 +275,7 @@ Screen {
 					anchors.right: showSwitchToggle.left
 					anchors.top: parent.top
 					anchors.topMargin: isNxt ? 10 : 8
-					anchors.rightMargin: 10
+					anchors.rightMargin: 5
 					onClicked: {
 						if (parseInt(maxdimlevel) > 19) { // in 10 steps
 							var newDimStep = parseInt(dimlevelint) + (parseInt(maxdimlevel) / 10);
@@ -263,20 +292,25 @@ Screen {
 					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
 
-				Text {
+				StandardButton {
 					id: txtDimmerValue
-					width: isNxt ? 35 : 28
+					width: isNxt ? 75 : 60
+					height: isNxt ? 35 : 28
 					text: dimlevel
-					font.pixelSize: isNxt ? 20 : 16
-					font.family: qfont.bold.name
-					color: colors.clockTileColor
 					anchors {
 						top: parent.top
-						topMargin: isNxt ? 15 : 12
+						topMargin: isNxt ? 10 : 8
 						right: plusDimmer.left
 						rightMargin: 5
 					}
-					visible: (switchtype == "Dimmer")
+					onClicked: {
+						currentIdx = idx;
+						currentMaxDimLevel = maxdimlevel;
+						qnumKeyboard.open("Voer het gewenste dimlevel in", txtDimmerValue.text, "" , 1 , saveDimmerValue, validateDimmerValue);
+						qnumKeyboard.maxTextLength = 3;
+						qnumKeyboard.state = "num_integer_clear_backspace";
+					}
+					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
 
 				StandardButton {
@@ -334,6 +368,7 @@ Screen {
 			maxdimlevel: "string",
 			dimlevelint: "string",
 			levelnames: "string",
+			orgswitchtype: "string",
 			dimlevel: "string"
 		})
 	}
