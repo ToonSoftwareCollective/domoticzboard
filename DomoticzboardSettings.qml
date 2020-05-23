@@ -16,7 +16,9 @@ Screen {
 		showFavouritesToggle.isSwitchedOn = app.showFavourites;
 		showScenesToggle.isSwitchedOn = app.showScenes;
 		ipadresLabel.inputText = app.ipadres;
-		poortnummerLabel.inputText = app.poortnummer;
+		portNumberLabel.inputText = app.portNumber;
+		usernameLabel.inputText = app.username;
+		passwordLabel.inputText = app.password;
 		messageShown = false;
 	}
 
@@ -45,10 +47,26 @@ Screen {
 		}
 	}
 
-	function savePoortnummer(text) {
+	function savePortNumber(text) {
 		if (text) {
-			poortnummerLabel.inputText = text;
-			app.poortnummer = text;
+			portNumberLabel.inputText = text;
+			app.portNumber = text;
+			showMessage();
+		}
+	}
+
+	function saveUsername(text) {
+		if (text) {
+			usernameLabel.inputText = text;
+			app.username = text;
+			showMessage();
+		}
+	}
+
+	function savePassword(text) {
+		if (text) {
+			passwordLabel.inputText = text;
+			app.password = text;
 			showMessage();
 		}
 	}
@@ -177,7 +195,7 @@ Screen {
 		}
 	}	
 	
-
+	// start ipadres
 	EditTextLabel4421 {
 		id: ipadresLabel
 		height: editipAdresButton.height
@@ -191,7 +209,6 @@ Screen {
 			topMargin: isNxt ? 25 : 20
 		}
 	}
-			
 	IconButton {
 		id: editipAdresButton
 		width: isNxt ? 50 : 40
@@ -206,10 +223,10 @@ Screen {
 		}
 	}
 	// end ipadres
-	// start portnumber
-	
+
+	// start port number
 	EditTextLabel4421 {
-		id: poortnummerLabel
+		id: portNumberLabel
 		height: editportNumberButton.height
 		width: isNxt ? 800 : 600
 		leftTextAvailableWidth: isNxt ? 500 : 400
@@ -221,20 +238,76 @@ Screen {
 			topMargin: isNxt ? 25 : 20
 		}
 	}
-	
 	IconButton {
 		id: editportNumberButton
 		width: isNxt ? 50 : 40
 		anchors {
-			left:poortnummerLabel.right
+			left:portNumberLabel.right
 			leftMargin: isNxt ? 12 : 10
-			top: poortnummerLabel.top
+			top: portNumberLabel.top
 		}
 		iconSource: "qrc:/tsc/edit.png"
 			onClicked: {
-			qkeyboard.open("voer hier de poort in", poortnummerLabel.inputText, savePoortnummer);
+			qkeyboard.open("voer hier het poortnummer in", portNumberLabel.inputText, savePortNumber);
 		}
 	}
+	// end port number
 
-	// end port number		
+	// start username
+	EditTextLabel4421 {
+		id: usernameLabel
+		height: editUsernameButton.height
+		width: isNxt ? 800 : 600
+		leftTextAvailableWidth: isNxt ? 500 : 400
+		leftText: qsTr("Username")
+		anchors {
+			left:parent.left
+			leftMargin: isNxt ? 62 : 50
+			top: portNumberLabel.bottom
+			topMargin: isNxt ? 25 : 20
+		}
+	}
+	IconButton {
+		id: editUsernameButton
+		width: isNxt ? 50 : 40
+		anchors {
+			left:usernameLabel.right
+			leftMargin: isNxt ? 12 : 10
+			top: usernameLabel.top
+		}
+		iconSource: "qrc:/tsc/edit.png"
+			onClicked: {
+			qkeyboard.open("voer hier de gebruikersnaam in", usernameLabel.inputText, saveUsername);
+		}
+	}
+	// end username
+
+	// start password
+	EditTextLabel4421 {
+		id: passwordLabel
+		height: editPasswordButton.height
+		width: isNxt ? 800 : 600
+		leftTextAvailableWidth: isNxt ? 500 : 400
+		leftText: qsTr("Password")
+		anchors {
+			left:parent.left
+			leftMargin: isNxt ? 62 : 50
+			top: usernameLabel.bottom
+			topMargin: isNxt ? 25 : 20
+		}
+	}
+	IconButton {
+		id: editPasswordButton
+		width: isNxt ? 50 : 40
+		anchors {
+			left:passwordLabel.right
+			leftMargin: isNxt ? 12 : 10
+			top: passwordLabel.top
+		}
+		iconSource: "qrc:/tsc/edit.png"
+			onClicked: {
+			qkeyboard.open("voer hier het wachtwoord in", passwordLabel.inputText, savePassword);
+		}
+	}
+	// end password
 }

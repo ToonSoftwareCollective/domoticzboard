@@ -74,7 +74,7 @@ Screen {
 
 	function simpleSynchronous(request) {
 		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.open("GET", request, true);
+		xmlhttp.open("GET", request + "&username=" + Qt.btoa(app.username) + "&password=" + Qt.btoa(app.password), true);
 		xmlhttp.onreadystatechange=function() {
 			if (xmlhttp.readyState == 4) {
 				if (xmlhttp.status == 200) {
