@@ -15,6 +15,8 @@ Screen {
 	property int currentMaxDimLevel
 	property string currentLevelName
 	property string headerTextSwitches : "Schakelaars:"
+	property string dimmerCommand
+	property int oldDimLevel : -1
 
 	// Function (triggerd by a signal) updates the list models
 	function updateDomoticzList() {
@@ -277,17 +279,18 @@ Screen {
 					anchors.topMargin: isNxt ? 10 : 8
 					anchors.rightMargin: 5
 					onClicked: {
+						if (oldDimLevel == -1) oldDimLevel = parseInt(dimlevelint);
 						if (parseInt(maxdimlevel) > 19) { // in 10 steps
-							var newDimStep = parseInt(dimlevelint) + (parseInt(maxdimlevel) / 10);
+							var newDimStep = oldDimLevel + (parseInt(maxdimlevel) / 10);
 						} else {
-							var newDimStep = parseInt(dimlevelint) + 1;
+							var newDimStep = oldDimLevel + 1;
 						}
 						if (newDimStep > parseInt(maxdimlevel)) {
 							 newDimStep = parseInt(maxdimlevel);
 						}
-						blockDimmerControls = true;
-						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + newDimStep);
-						pause1Second.start();
+						oldDimLevel = newDimStep;
+						dimmerControlsWaitingTime.restart();
+						dimmerCommand = "http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + newDimStep;
 					}
 					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
@@ -323,17 +326,18 @@ Screen {
 					anchors.topMargin: isNxt ? 10 : 8
 					anchors.rightMargin: 10
 					onClicked: {
+						if (oldDimLevel == -1) oldDimLevel = parseInt(dimlevelint);
 						if (parseInt(maxdimlevel) > 19) { // in 10 steps
-							var newDimStep = parseInt(dimlevelint) - (parseInt(maxdimlevel) / 10);
+							var newDimStep = oldDimLevel - (parseInt(maxdimlevel) / 10);
 						} else {
-							var newDimStep = parseInt(dimlevelint) - 1;
+							var newDimStep = oldDimLevel - 1;
 						}
 						if (newDimStep < 0) {
 							 newDimStep = 0;
 						}
-						blockDimmerControls = true;
-						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + newDimStep);
-						pause1Second.start();
+						oldDimLevel = newDimStep;
+						dimmerControlsWaitingTime.restart();
+						dimmerCommand = "http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Set%20Level&level=" + newDimStep;
 					}
 					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
@@ -522,6 +526,21 @@ Screen {
 		interval: 1000
 		running: false
 		repeat: false
-		onTriggered: blockDimmerControls = false
+		onTriggered: {
+			blockDimmerControls = false;
+			oldDimLevel = -1;
+		}
+	}
+
+	Timer {
+		id: dimmerControlsWaitingTime
+		interval: 1000
+		running: false
+		repeat: false
+		onTriggered: {
+			blockDimmerControls = true;
+			simpleSynchronous(dimmerCommand)
+			pause1Second.start();
+		}
 	}
 }

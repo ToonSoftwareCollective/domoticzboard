@@ -1,3 +1,9 @@
+1.1.12
+- dimmer controls "-" and "+" can now be operated multiple times before sending the new values to Domoticz
+  this avoids the one second delay between each button click.
+  When no button is clicked for one second, the final command is send to domoticz.
+  Please do not operate the buttons for multiple dimmers in one go, as only the last dimmer will be updated
+
 1.1.11
 - add support for authentication
 
