@@ -438,10 +438,11 @@ Screen {
 					onSelectedChangedByUser: {
 						if (status == "On") {
 							status = "Off";
+							simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchscene&idx="+idx+"&switchcmd=Off");
 						} else {
 							status = "On";
+							simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchscene&idx="+idx+"&switchcmd=On");
 						}
-						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchscene&idx="+idx+"&switchcmd=Toggle");
 					}
 				}
 			}
