@@ -262,8 +262,7 @@ App {
 				}
 			}
 		}
-		xmlhttp.open("GET", "http://"+connectionPath+"/json.htm?type=devices&filter=all&used=true&order=Name&username=" + Qt.btoa(username) + "&password=" + Qt.btoa(password), true);
-//		xmlhttp.open("GET", "http://127.0.0.1/hdrv_zwave/domoticzconfig.txt", true);
+		xmlhttp.open("GET", "http://"+connectionPath+"/json.htm?type=command&param=getdevices&filter=all&used=true&order=Name&username=" + Qt.btoa(username) + "&password=" + Qt.btoa(password), true);
 		xmlhttp.send();
 	}
 	
