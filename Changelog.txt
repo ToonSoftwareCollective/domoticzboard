@@ -1,3 +1,6 @@
+1.1.15
+- improved handling of blinds
+
 1.1.14
 - small change to become compliant with the updated Domoticz API
 
