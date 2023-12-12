@@ -152,7 +152,7 @@ App {
 				if (domoticzConfigJSON["result"][i]["IsSubDevice"] !== true) {
 						// [Type] filter only "On/off" devices
 					if (domoticzConfigJSON["result"][i]["SwitchType"]) {
-						if ((domoticzConfigJSON["result"][i]["SwitchType"] == "On/Off") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Dimmer") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Blinds Percentage")) {
+						if ((domoticzConfigJSON["result"][i]["SwitchType"] == "On/Off") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Dimmer") || (domoticzConfigJSON["result"][i]["SwitchType"] == "Selector") || (domoticzConfigJSON["result"][i]["SwitchType"].substring(0,6) == "Blinds")) {
 								// filter favourites if needed
 							if (!(showFavourites) || (domoticzConfigJSON["result"][i]["Favorite"] == 1)) {
 
@@ -166,7 +166,7 @@ App {
 										tmpStatus = "On"
 									}
 								}
-								if (domoticzConfigJSON["result"][i]["SwitchType"] == "Blinds Percentage") {
+								if (domoticzConfigJSON["result"][i]["SwitchType"].substring(0,6) == "Blinds") {
 									if (domoticzConfigJSON["result"][i]["Level"] == domoticzConfigJSON["result"][i]["MaxDimLevel"]) {
 										tmpStatus = "Off"
 									} else {
@@ -192,7 +192,7 @@ App {
 									// turn Shelly blinds into dimmer
 								
 								var tmpSwitchType = domoticzConfigJSON["result"][i]["SwitchType"];
-								if (domoticzConfigJSON["result"][i]["SwitchType"] == "Blinds Percentage") {
+								if (domoticzConfigJSON["result"][i]["SwitchType"].substring(0,6) == "Blinds") {
 									tmpSwitchType = "Dimmer";
 								}
 
