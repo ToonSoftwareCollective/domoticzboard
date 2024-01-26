@@ -459,7 +459,7 @@ Screen {
 					}
 				}
 
-				OnOffToggle {
+/*				OnOffToggle {
 					id: showSceneToggle
 					height: 36
 				        anchors {
@@ -477,6 +477,37 @@ Screen {
 							status = "On";
 							simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchscene&idx="+idx+"&switchcmd=On");
 						}
+					}
+				}
+*/
+
+				StandardButton {
+					id: sceneClose
+					width: isNxt ? 75 : 60
+					height: isNxt ? 35 : 28
+					text: "Uit"
+					anchors.right: parent.right
+					anchors.top: parent.top
+					anchors.topMargin: isNxt ? 10 : 8
+					anchors.rightMargin: 5
+					onClicked: {
+						dimmerControlsWaitingTime.restart();
+						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchscene&idx="+idx+"&switchcmd=Off");
+					}
+				}
+
+				StandardButton {
+					id: sceneOpen
+					width: isNxt ? 75 : 60
+					height: isNxt ? 35 : 28
+					text: "Aan"
+					anchors.right: sceneClose.left
+					anchors.top: parent.top
+					anchors.topMargin: isNxt ? 10 : 8
+					anchors.rightMargin: 10
+					onClicked: {
+						dimmerControlsWaitingTime.restart();
+						simpleSynchronous("http://"+app.connectionPath+"/json.htm?type=command&param=switchscene&idx="+idx+"&switchcmd=On");
 					}
 				}
 			}
@@ -569,7 +600,7 @@ Screen {
 
 	Timer {
 		id: dimmerControlsWaitingTime
-		interval: 500
+		interval: 400
 		running: false
 		repeat: false
 		onTriggered: {
