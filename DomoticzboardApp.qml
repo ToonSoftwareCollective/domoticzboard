@@ -193,7 +193,7 @@ App {
 								
 								var tmpSwitchType = domoticzConfigJSON["result"][i]["SwitchType"];
 								if (domoticzConfigJSON["result"][i]["SwitchType"].substring(0,6) == "Blinds") {
-									tmpSwitchType = "Dimmer";
+									tmpSwitchType = "Blinds";
 								}
 
 									// filter dummies if needed
@@ -201,30 +201,30 @@ App {
 									domoticzSwitchesData = domoticzSwitchesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + tmpStatus + "</status><switchtype>" + tmpSwitchType + "</switchtype><orgswitchtype>" + domoticzConfigJSON["result"][i]["SwitchType"] + "</orgswitchtype><maxdimlevel>" + domoticzConfigJSON["result"][i]["MaxDimLevel"] + "</maxdimlevel><dimlevelint>" + domoticzConfigJSON["result"][i]["LevelInt"] + "</dimlevelint><dimlevel>" + domoticzConfigJSON["result"][i]["Level"] + "</dimlevel><levelnames>" + tmpLevelNames.toString() + "</levelnames></item>";
 								}
 
-									// file Tile values
-								if ((domoticzConfigJSON["result"][i]["idx"] == switch1Idx) && (switch1Type == "Light")) {
+									// fill Tile values
+								if ((domoticzConfigJSON["result"][i]["idx"] == switch1Idx)) {
 									switch1Name = domoticzConfigJSON["result"][i]["Name"];
 									switch1Status = tmpStatus;
 									switch1Option = tmpOption;
+									switch1Type = tmpSwitchType;
 								}
-								if ((domoticzConfigJSON["result"][i]["idx"] == switch2Idx) && (switch2Type == "Light")) {
+								if ((domoticzConfigJSON["result"][i]["idx"] == switch2Idx)) {
 									switch2Name = domoticzConfigJSON["result"][i]["Name"];
 									switch2Status = tmpStatus;
 									switch2Option = tmpOption;
+									switch2Type = tmpSwitchType;								}
 								}
 							}
 						}
 					}
 				}
 			}
-
+			domoticzSwitchesData = domoticzSwitchesData + "</domoticz>";
+			domoticzScenesData = domoticzScenesData + "</domoticz>";
+			domoticzDataRead = true;
+			domoticzUpdated();
+			domoticzConfigJSON = JSON.parse("{}"); 
 		}
-		domoticzSwitchesData = domoticzSwitchesData + "</domoticz>";
-		domoticzScenesData = domoticzScenesData + "</domoticz>";
-		domoticzDataRead = true;
-		domoticzUpdated();
-		domoticzConfigJSON = JSON.parse("{}"); 
-	}
 
 
 	function saveSettings(){

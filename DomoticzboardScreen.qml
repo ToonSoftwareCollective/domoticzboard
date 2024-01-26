@@ -226,6 +226,7 @@ Screen {
 							}
 						}
 					}
+					visible: (switchtype !== "Blinds")
 				}
 
 				Text {
@@ -274,10 +275,11 @@ Screen {
 					width: isNxt ? 35 : 28
 					height: isNxt ? 35 : 28
 					text: "+"
-					anchors.right: showSwitchToggle.left
 					anchors.top: parent.top
 					anchors.topMargin: isNxt ? 10 : 8
-					anchors.rightMargin: 5
+					anchors.right: parent.right
+					anchors.rightMargin : 3
+
 					onClicked: {
 						if (oldDimLevel == -1) oldDimLevel = parseInt(dimlevelint);
 						if (parseInt(maxdimlevel) > 19) { // in 10 steps
@@ -342,6 +344,38 @@ Screen {
 					visible: (switchtype == "Dimmer" && !blockDimmerControls)
 				}
 
+
+				StandardButton {
+					id: blindsClose
+					width: isNxt ? 100 : 80
+					height: isNxt ? 35 : 28
+					text: "Sluit"
+					anchors.right: parent.right
+					anchors.top: parent.top
+					anchors.topMargin: isNxt ? 10 : 8
+					anchors.rightMargin: 5
+					onClicked: {
+						dimmerControlsWaitingTime.restart();
+						dimmerCommand = "http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Close";
+					}
+					visible: (switchtype == "Blinds")
+				}
+
+				StandardButton {
+					id: blindsOpen
+					width: isNxt ? 100 : 80
+					height: isNxt ? 35 : 28
+					text: "Open"
+					anchors.right: blindsClose.left
+					anchors.top: parent.top
+					anchors.topMargin: isNxt ? 10 : 8
+					anchors.rightMargin: 10
+					onClicked: {
+						dimmerControlsWaitingTime.restart();
+						dimmerCommand = "http://"+app.connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idx + "&switchcmd=Open";
+					}
+					visible: (switchtype == "Blinds")
+				}
 			}
 
 			dataModel: switchesModel
@@ -535,7 +569,7 @@ Screen {
 
 	Timer {
 		id: dimmerControlsWaitingTime
-		interval: 1000
+		interval: 500
 		running: false
 		repeat: false
 		onTriggered: {
