@@ -1,3 +1,8 @@
+1.1.18
+- integration with the "Slimme Stekker Programma" app,
+  domoticz plugs can now be programmed to switch on/off at specified times in the other app.
+  Needs at least "Slimme Stekker App" version 1.0.4
+
 1.1.17
 
 - improved handling of blinds and scenes

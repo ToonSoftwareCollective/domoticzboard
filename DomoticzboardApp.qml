@@ -25,6 +25,9 @@ App {
 	property string domoticzSwitchesData			// input for xml model
 	property string domoticzScenesData
 	property bool domoticzDataRead: false
+	property string switchesExport
+	property int switchesExportCount
+
 	
 	property string timeStr
 	property string dateStr
@@ -46,6 +49,8 @@ App {
 	property string switch2Option	
 
 	property bool firstTimeShown : true
+	property variant switchActionPlugSchedule
+	property string idxSwitch
 
 	property string tilebulb_offvar: "qrc:/tsc/TileLightBulbOff.png";
 	property string tilebulb_onvar: "qrc:/tsc/TileLightBulbOn.png";
@@ -107,7 +112,53 @@ App {
 		} catch(e) {
 		}
 
+        	try{
+            		tscsignals.tscSignal.connect(switchDomoticzPlugs);
+        	} catch(e) {
+        	}
+
 		datetimeTimer.start();
+	}
+
+	function switchDomoticzPlugs(appName, appArguments) {
+
+		idxSwitch = "";
+
+		if (appName == "domoticzboard") {
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange=function() {
+				if (xmlhttp.readyState == 4) {
+					if (xmlhttp.status == 200) {
+						domoticzConfigJSON = JSON.parse(xmlhttp.responseText); 
+						switchActionPlugSchedule = JSON.parse(appArguments);
+							//find idx number
+							// get light switches from config
+						for (var i = 0; i < domoticzConfigJSON["result"].length; i++) {	
+							if (domoticzConfigJSON["result"][i]["Name"] == switchActionPlugSchedule["name"]) {
+								idxSwitch = domoticzConfigJSON["result"][i]["idx"]
+							}
+						}
+
+						if (idxSwitch !== "") {
+							if (switchActionPlugSchedule["action"] == "1") {
+								simpleSynchronous("http://"+connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idxSwitch + "&switchcmd=On");
+							} else {
+								simpleSynchronous("http://"+connectionPath+"/json.htm?type=command&param=switchlight&idx=" + idxSwitch + "&switchcmd=Off");
+							}
+						}
+
+					}
+				}
+			}
+			xmlhttp.open("GET", "http://"+connectionPath+"/json.htm?type=command&param=getdevices&filter=all&used=true&order=Name&username=" + Qt.btoa(username) + "&password=" + Qt.btoa(password), true);
+			xmlhttp.send();
+		}
+	}
+
+	function simpleSynchronous(request) {
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open("GET", request + "&username=" + Qt.btoa(username) + "&password=" + Qt.btoa(password), true);
+		xmlhttp.send();
 	}
 
 	function refreshScreen() {
@@ -127,6 +178,8 @@ App {
 			// init XML output
 		domoticzSwitchesData = "<domoticz>";
 		domoticzScenesData = "<domoticz>";
+		switchesExport = '{"plugs":[';
+		switchesExportCount = 0;
 
 			// get light switches from config
 		for (var i = 0; i < domoticzConfigJSON["result"].length; i++) {	
@@ -199,6 +252,12 @@ App {
 									// filter dummies if needed
 								if (showDummies || (domoticzConfigJSON["result"][i]["HardwareType"].substring(0,5) !== "Dummy")) {
 									domoticzSwitchesData = domoticzSwitchesData + "<item><idx>" + domoticzConfigJSON["result"][i]["idx"] + "</idx><name>" + domoticzConfigJSON["result"][i]["Name"] + "</name><status>" + tmpStatus + "</status><switchtype>" + tmpSwitchType + "</switchtype><orgswitchtype>" + domoticzConfigJSON["result"][i]["SwitchType"] + "</orgswitchtype><maxdimlevel>" + domoticzConfigJSON["result"][i]["MaxDimLevel"] + "</maxdimlevel><dimlevelint>" + domoticzConfigJSON["result"][i]["LevelInt"] + "</dimlevelint><dimlevel>" + domoticzConfigJSON["result"][i]["Level"] + "</dimlevel><levelnames>" + tmpLevelNames.toString() + "</levelnames></item>";
+									if (switchesExportCount > 0 ) {
+										switchesExport = switchesExport + ',"' + domoticzConfigJSON["result"][i]["Name"] + '"'
+									} else {
+										switchesExport = switchesExport + '"' + domoticzConfigJSON["result"][i]["Name"] + '"'
+									}
+									switchesExportCount = switchesExportCount + 1;
 								}
 
 									// fill Tile values
@@ -212,19 +271,25 @@ App {
 									switch2Name = domoticzConfigJSON["result"][i]["Name"];
 									switch2Status = tmpStatus;
 									switch2Option = tmpOption;
-									switch2Type = tmpSwitchType;								}
+									switch2Type = tmpSwitchType;
 								}
 							}
 						}
 					}
 				}
 			}
-			domoticzSwitchesData = domoticzSwitchesData + "</domoticz>";
-			domoticzScenesData = domoticzScenesData + "</domoticz>";
-			domoticzDataRead = true;
-			domoticzUpdated();
-			domoticzConfigJSON = JSON.parse("{}"); 
 		}
+		domoticzSwitchesData = domoticzSwitchesData + "</domoticz>";
+		domoticzScenesData = domoticzScenesData + "</domoticz>";
+		domoticzDataRead = true;
+		domoticzUpdated();
+		domoticzConfigJSON = JSON.parse("{}");
+			// send list of plugs to the plugSchedule app listener (whether installed or not) 
+		try{
+			tscsignals.tscSignal("plugSchedule", switchesExport + "]}");
+		} catch(e) {
+		}
+	}
 
 
 	function saveSettings(){
